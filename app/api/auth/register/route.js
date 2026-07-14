@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import { createUser, findUserByEmail } from "../../../../lib/users";
+import { buildUser, publicUser } from "../../../../Model/Users";
 
 export async function POST(req) {
   const body = await req.json();
@@ -15,15 +16,16 @@ export async function POST(req) {
   }
 
   const hash = await bcrypt.hash(password, 10);
-  const user = {
+  const verifyToken = uuidv4();
+  const user = buildUser({
     id: uuidv4(),
     email,
-    name: name || "",
+    name,
     passwordHash: hash,
-    createdAt: new Date().toISOString(),
     verified: false,
-  };
+    verifyToken,
+  });
 
   await createUser(user);
-  return new Response(JSON.stringify({ ok: true, id: user.id }), { status: 201 });
+  return new Response(JSON.stringify({ ok: true, user: publicUser(user), verifyToken }), { status: 201 });
 }

@@ -2,11 +2,15 @@ import { findUserByRefreshToken, updateUser } from "../../../../lib/users";
 
 export async function POST(req) {
   const { refresh } = await req.json();
-  if (!refresh) return new Response(JSON.stringify({ error: "Missing refresh token" }), { status: 400 });
+  if (!refresh) {
+    return new Response(JSON.stringify({ error: "Missing refresh token" }), { status: 400 });
+  }
 
   const user = await findUserByRefreshToken(refresh);
-  if (!user) return new Response(JSON.stringify({ ok: true })); // idempotent
+  if (!user) {
+    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  }
 
   await updateUser(user.id, { refreshToken: null });
-  return new Response(JSON.stringify({ ok: true }));
+  return new Response(JSON.stringify({ ok: true }), { status: 200 });
 }
