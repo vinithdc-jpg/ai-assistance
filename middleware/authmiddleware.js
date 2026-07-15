@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyToken, COOKIE_NAME } from "@/lib/auth";
 
 // Routes that require the user to be logged in
-const protectedRoutes = ["/dashboard", "/api/protected"];
+const protectedRoutes = ["/dashboard", "/api/protected", "/api/auth/proctect"];
 
 // Routes a logged-in user shouldn't see again (login/register pages)
 const authOnlyRoutes = ["/login", "/register"];
