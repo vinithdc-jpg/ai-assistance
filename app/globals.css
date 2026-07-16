@@ -1,9 +1,15 @@
 @import "tailwindcss";
 
-
 :root {
   --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-surface: #f8fafc;
+  --color-primary: #4338ca;
+  --color-primary-strong: #3730a3;
+  --color-primary-light: rgba(99, 102, 241, 0.16);
 }
 
 html {
@@ -11,8 +17,19 @@ html {
 }
 
 body {
-  color: #12142B;
-  background: #FFFFFF;
+  min-height: 100vh;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+button,
+a {
+  font-family: var(--font-display);
 }
 
 .container-page {
@@ -21,5 +38,59 @@ body {
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+@layer utilities {
+  .text-ink {
+    color: var(--color-ink);
+  }
+
+  .text-muted {
+    color: var(--color-muted);
+  }
+
+  .border-line {
+    border-color: var(--color-line);
+  }
+
+  .bg-surface {
+    background-color: var(--color-surface);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-primary-light {
+    background-color: var(--color-primary-light);
+  }
+
+  .shadow-card {
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  }
+
+  .shadow-raised {
+    box-shadow: 0 32px 90px rgba(15, 23, 42, 0.14);
+  }
+
+  .rounded-xl2 {
+    border-radius: 1.75rem;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-primary;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-lg transition duration-200;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-[var(--color-line)] bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition duration-200 hover:bg-slate-100;
+  }
 }
 

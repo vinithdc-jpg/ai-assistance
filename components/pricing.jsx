@@ -64,12 +64,11 @@ export default function Pricing() {
       <div className="container-page">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow">Pricing</span>
-          <h2 className="mt-4 font-display text-3xl font-bold text-ink sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-bold text-ink sm:text-4xl">
             Transparent Pricing
           </h2>
           <p className="mt-3 text-muted">
-            No hidden fees, no per-seat surprises. Pick the plan that matches
-            your ticket volume today.
+            No hidden fees, no per-seat surprises. Pick the plan that matches your ticket volume today.
           </p>
         </div>
 
@@ -89,18 +88,12 @@ export default function Pricing() {
                 </span>
               )}
 
-              <h3 className="font-display text-lg font-semibold text-ink">
-                {plan.name}
-              </h3>
+              <h3 className="text-lg font-semibold text-ink">{plan.name}</h3>
               <p className="mt-1 text-sm text-muted">{plan.description}</p>
 
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="font-display text-4xl font-bold text-ink">
-                  {plan.price}
-                </span>
-                {plan.period && (
-                  <span className="text-sm text-muted">{plan.period}</span>
-                )}
+                <span className="text-4xl font-bold text-ink">{plan.price}</span>
+                {plan.period && <span className="text-sm text-muted">{plan.period}</span>}
               </div>
 
               <ul className="mt-6 flex-1 space-y-3">
@@ -114,9 +107,7 @@ export default function Pricing() {
 
               <a
                 href="#get-started"
-                className={`mt-8 w-full text-center ${
-                  plan.highlighted ? "btn-primary" : "btn-secondary"
-                }`}
+                className={`mt-8 w-full text-center ${plan.highlighted ? "btn-primary" : "btn-secondary"}`}
               >
                 {plan.cta}
               </a>
