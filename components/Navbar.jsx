@@ -35,10 +35,10 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <a href="#login" className="text-sm font-semibold text-ink hover:text-primary">
+          <a href="/login" className="text-sm font-semibold text-ink hover:text-primary">
             Log in
           </a>
-          <a href="#get-started" className="btn-primary !px-5 !py-2.5 text-sm">
+          <a href="/register" className="btn-primary !px-5 !py-2.5 text-sm">
             Get Started
           </a>
         </div>
@@ -71,10 +71,10 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <a href="#login" className="text-sm font-semibold text-ink">
+            <a href="/login" className="text-sm font-semibold text-ink">
               Log in
             </a>
-            <a href="#get-started" className="btn-primary w-full text-sm">
+            <a href="/register" className="btn-primary w-full text-sm">
               Get Started
             </a>
           </nav>
