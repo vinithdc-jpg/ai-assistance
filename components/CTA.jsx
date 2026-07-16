@@ -1,4 +1,4 @@
-export default function CTABanner() {
+export default function CTA() {
   return (
     <section className="px-6 pb-20">
       <div className="container-page">

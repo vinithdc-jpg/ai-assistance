@@ -1,23 +1,23 @@
 import React from 'react'
-import Header from "@/components/Header";
+import Navbar from '@/components/Navbar';
 import Hero from "@/components/Hero";
-import Infrastructure from "@/components/Infrastructure";
-import DeploymentSteps from "@/components/DeploymentSteps";
-import Pricing from "@/components/Pricing";
+import Infrastructure from '@/components/Infrastructure';
+import DeploymentSteps from "@/components/deployementSetup";
+import Pricing from '@/components/pricing';
 import FAQ from "@/components/FAQ";
-import CTABanner from "@/components/CTABanner";
+import CTA from '@/components/CTA';
 import Footer from "@/components/Footer";
 
 const page = () => {
   return (
     <main>
-      <Header />
+      <Navbar />
       <Hero />
       <Infrastructure />
       <DeploymentSteps />
       <Pricing />
       <FAQ />
-      <CTABanner />
+      <CTA/>
       <Footer />
     </main>
   )
