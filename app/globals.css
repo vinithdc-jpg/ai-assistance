@@ -82,7 +82,8 @@ a {
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-primary;
+    @apply inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em];
+    color: var(--color-primary);
   }
 
   .btn-primary {
