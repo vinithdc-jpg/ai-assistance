@@ -1,14 +1,13 @@
-import React from 'react'
-import Navbar from '@/components/Navbar';
+import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Infrastructure from '@/components/Infrastructure';
+import Infrastructure from "@/components/Infrastructure";
 import DeploymentSteps from "@/components/deployementSetup";
-import Pricing from '@/components/pricing';
+import Pricing from "@/components/pricing";
 import FAQ from "@/components/FAQ";
-import CTA from '@/components/CTA';
+import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 
-const page = () => {
+export default function HomePage() {
   return (
     <main>
       <Navbar />
@@ -17,10 +16,8 @@ const page = () => {
       <DeploymentSteps />
       <Pricing />
       <FAQ />
-      <CTA/>
+      <CTA />
       <Footer />
     </main>
-  )
+  );
 }
-
-export default page
