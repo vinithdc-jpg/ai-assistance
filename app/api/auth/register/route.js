@@ -44,13 +44,13 @@ export async function POST(req) {
       { status: 201 }
     );
 
-    // Store JWT in an httpOnly cookie so client JS can't read it (XSS protection)
+    
     response.cookies.set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7, 
     });
 
     return response;
