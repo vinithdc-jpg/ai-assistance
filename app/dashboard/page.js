@@ -1,24 +1,37 @@
 import SideBar from "@/components/SideBar";
+import TopBar from "@/components/TopBar";
+import WelcomeHeader from "@/components/WelcomeHeadher";
+import StatsCards from "@/components/StatsCards";
+import RecentConversations from "@/components/RecentConversation";
+import RecentActivity from "@/components/RecentActivity";
+import InsightsBanner from "@/components/InsignBanner";
+import DashboardFooter from "@/components/DashBoardFooter";
 
 export default function DashboardPage() {
   return (
-    <div className="flex min-h-screen bg-surface">
-      <SideBar />
-      <main className="flex-1 p-8">
-        <h1 className="font-display text-2xl font-bold text-ink">
-          Conversations
-        </h1>
-        <p className="mt-1 text-sm text-muted">
-          Everything the agent is handling right now.
-        </p>
 
-        <div className="mt-6 rounded-xl2 border border-line bg-white p-8 shadow-card">
-          <p className="text-sm text-muted">
-            Drop your conversation list, table, or chat view here — the
-            sidebar stays fixed alongside it.
-          </p>
-        </div>
-      </main>
-    </div>
+    < div className="flex h-screen bg-surface overflow-hidden" >
+      <SideBar />
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <TopBar />
+
+        {/* 2. Allow only the main panel to scroll if content overflows */}
+        <main className="flex-1 space-y-6 px-6 py-6 overflow-y-auto">
+          <WelcomeHeader name="Alex" />
+          <StatsCards />
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <RecentConversations />
+            </div>
+            <RecentActivity />
+          </div>
+
+          <InsightsBanner />
+          <DashboardFooter />
+        </main>
+      </div>
+    </div >
   );
 }
