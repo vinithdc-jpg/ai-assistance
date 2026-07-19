@@ -111,7 +111,7 @@ TicketSchema.index({ ticketNumber: "text", title: "text", description: "text" })
 TicketSchema.pre("save", async function () {
   if (!this.ticketNumber) {
     const year = new Date().getFullYear();
-    const count = await mongoose.models.Ticket.countDocuments();
+    const count = await this.constructor.countDocuments();
     const seq = String(count + 1).padStart(5, "0");
     this.ticketNumber = `TKT-${year}-${seq}`;
   }
