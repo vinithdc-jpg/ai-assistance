@@ -1,25 +1,22 @@
 /**
  * app/api/tickets/[id]/route.js
  * GET    /api/tickets/:id  — get one ticket (full detail)
- * PUT    /api/tickets/:id  — update ticket (title, desc, priority, assignedAgent, tags)
+ * PUT    /api/tickets/:id  — update ticket
  * DELETE /api/tickets/:id  — delete ticket (admin only)
  */
 
 import dbConnect from "@/lib/db";
 import Ticket from "@/models/Ticket";
+import { getUserFromRequest, ok, err } from "@/lib/ticketUtils";
 import {
-  getUserFromRequest,
-  logActivity,
-  ok,
-  err,
-} from "@/lib/ticketUtils";
-import { ACTIVITY_TYPE, TICKET_PRIORITY, TICKET_CATEGORY } from "@/lib/constants";
+  canAccessTicket,
+  getAllowedUpdateFields,
+  updateTicket,
+} from "@/lib/services/ticketService";
+import { validateUpdateTicket } from "@/lib/validation/ticketValidation";
 
 export const dynamic = "force-dynamic";
 
-// ─────────────────────────────────────────────
-// GET /api/tickets/:id
-// ─────────────────────────────────────────────
 export async function GET(request, { params }) {
   try {
     const user = getUserFromRequest(request);
@@ -35,14 +32,7 @@ export async function GET(request, { params }) {
       .lean();
 
     if (!ticket) return err("Ticket not found", 404);
-
-    // Customers can only view their own tickets
-    if (
-      user.role === "customer" &&
-      ticket.customer._id.toString() !== user.userId
-    ) {
-      return err("Forbidden", 403);
-    }
+    if (!canAccessTicket(user, ticket)) return err("Forbidden", 403);
 
     return ok({ ticket });
   } catch (error) {
@@ -51,9 +41,6 @@ export async function GET(request, { params }) {
   }
 }
 
-// ─────────────────────────────────────────────
-// PUT /api/tickets/:id
-// ─────────────────────────────────────────────
 export async function PUT(request, { params }) {
   try {
     const user = getUserFromRequest(request);
@@ -64,68 +51,32 @@ export async function PUT(request, { params }) {
 
     const ticket = await Ticket.findById(id);
     if (!ticket) return err("Ticket not found", 404);
-
-    // Customers cannot update tickets that are not theirs
-    if (
-      user.role === "customer" &&
-      ticket.customer.toString() !== user.userId
-    ) {
-      return err("Forbidden", 403);
-    }
+    if (!canAccessTicket(user, ticket)) return err("Forbidden", 403);
 
     const body = await request.json();
-    const allowedFields =
-      user.role === "customer"
-        ? ["title", "description", "tags"]
-        : ["title", "description", "priority", "category", "assignedAgent", "tags"];
+    const validation = validateUpdateTicket(body, user.role);
+    if (!validation.valid) return err(validation.errors[0], 400);
 
+    const allowedFields = getAllowedUpdateFields(user.role);
     const updates = {};
     for (const field of allowedFields) {
       if (body[field] !== undefined) updates[field] = body[field];
     }
 
-    // Validate priority if changed
-    if (updates.priority && !Object.values(TICKET_PRIORITY).includes(updates.priority)) {
-      return err("Invalid priority value", 400);
-    }
-    if (updates.category && !Object.values(TICKET_CATEGORY).includes(updates.category)) {
-      return err("Invalid category value", 400);
+    if (Object.keys(updates).length === 0) {
+      return err("No valid fields to update", 400);
     }
 
-    const prevPriority = ticket.priority;
-    const prevAgent = ticket.assignedAgent?.toString();
-
-    Object.assign(ticket, updates);
-    await ticket.save();
-
-    // Log relevant activity changes
-    if (updates.priority && updates.priority !== prevPriority) {
-      await logActivity({
-        ticketId: ticket._id,
-        actorId: user.userId,
-        actorRole: user.role,
-        type: ACTIVITY_TYPE.PRIORITY_CHANGED,
-        description: `Priority changed from ${prevPriority} to ${updates.priority}`,
-        metadata: { from: prevPriority, to: updates.priority },
-      });
+    // Customers cannot change status of closed tickets
+    if (
+      user.role === "customer" &&
+      ticket.isClosed &&
+      (updates.title || updates.description)
+    ) {
+      return err("Cannot edit a closed ticket", 400);
     }
 
-    if (updates.assignedAgent && updates.assignedAgent !== prevAgent) {
-      await logActivity({
-        ticketId: ticket._id,
-        actorId: user.userId,
-        actorRole: user.role,
-        type: ACTIVITY_TYPE.ASSIGNED,
-        description: `Ticket assigned to agent`,
-        metadata: { agentId: updates.assignedAgent },
-      });
-    }
-
-    const updated = await Ticket.findById(id)
-      .populate("customer", "name email")
-      .populate("assignedAgent", "name email")
-      .lean();
-
+    const updated = await updateTicket({ ticket, user, updates });
     return ok({ ticket: updated });
   } catch (error) {
     console.error("PUT /api/tickets/:id error:", error);
@@ -137,9 +88,6 @@ export async function PUT(request, { params }) {
   }
 }
 
-// ─────────────────────────────────────────────
-// DELETE /api/tickets/:id  (admin only)
-// ─────────────────────────────────────────────
 export async function DELETE(request, { params }) {
   try {
     const user = getUserFromRequest(request);
