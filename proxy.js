@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server";
 import { verifyToken, COOKIE_NAME } from "./lib/auth";
 
-const protectedRoutes = ["/dashboard", "/api/protected", "/api/auth/proctect"];
+// Routes that require the user to be logged in
+const protectedRoutes = [
+  "/dashboard",
+  "/api/protected",
+  "/api/auth/proctect",
+  "/api/tickets",
+];
+
+// Routes a logged-in user shouldn't see again (login/register pages)
 const authOnlyRoutes = ["/login", "/register"];
 
 export async function proxy(req) {
@@ -10,9 +18,14 @@ export async function proxy(req) {
   const user = token ? await verifyToken(token) : null;
   const isLoggedIn = !!user;
 
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
-  const isAuthOnlyRoute = authOnlyRoutes.some((route) => pathname.startsWith(route));
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isAuthOnlyRoute = authOnlyRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
+  // Not logged in but trying to access a protected route
   if (isProtectedRoute && !isLoggedIn) {
     if (pathname.startsWith("/api")) {
       return NextResponse.json(
@@ -20,26 +33,41 @@ export async function proxy(req) {
         { status: 401 }
       );
     }
-
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
+  // Already logged in but trying to visit login/register page
   if (isAuthOnlyRoute && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
+  // Attach decoded user info to request headers so downstream
+  // Server Components / Route Handlers can read it if needed
   if (isLoggedIn) {
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-user-id", user.userId);
     requestHeaders.set("x-user-email", user.email);
-    return NextResponse.next({ request: { headers: requestHeaders } });
+    // Forward role — defaults to "customer" if not present in older tokens
+    requestHeaders.set("x-user-role", user.role ?? "customer");
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
   }
 
   return NextResponse.next();
 }
 
+// Only run middleware on the routes we actually care about
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/protected/:path*", "/api/auth/proctect/:path*", "/login", "/register"],
+  matcher: [
+    "/dashboard/:path*",
+    "/api/protected/:path*",
+    "/api/auth/proctect/:path*",
+    "/api/tickets/:path*",
+    "/api/tickets",
+    "/login",
+    "/register",
+  ],
 };

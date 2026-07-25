@@ -5,7 +5,9 @@ import { signToken, COOKIE_NAME } from "@/lib/auth";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, role } = await req.json();
+    const validRoles = ["customer", "agent", "admin"];
+    const assignedRole = validRoles.includes(role) ? role : "customer";
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -31,9 +33,9 @@ export async function POST(req) {
       );
     }
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email, password, role: assignedRole });
 
-    const token = await signToken({ userId: user._id.toString(), email: user.email });
+    const token = await signToken({ userId: user._id.toString(), email: user.email, role: user.role });
 
     const response = NextResponse.json(
       {
