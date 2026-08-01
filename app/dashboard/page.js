@@ -15,8 +15,6 @@ export default function DashboardPage() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-
-        {/* 2. Allow only the main panel to scroll if content overflows */}
         <main className="flex-1 space-y-6 px-6 py-6 overflow-y-auto">
           <WelcomeHeader name="Alex" />
           <StatsCards />

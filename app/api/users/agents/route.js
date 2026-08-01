@@ -1,7 +1,3 @@
-/**
- * GET /api/users/agents — list agents for ticket assignment (agent/admin only)
- */
-
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { getUserFromRequest, ok, err } from "@/lib/ticketUtils";
