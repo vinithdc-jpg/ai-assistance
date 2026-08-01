@@ -1,9 +1,3 @@
-/**
- * app/api/tickets/route.js
- * GET  /api/tickets  — list tickets (filtered, paginated, sorted)
- * POST /api/tickets  — create a new ticket
- */
-
 import dbConnect from "@/lib/db";
 import Ticket from "@/models/Ticket";
 import {
