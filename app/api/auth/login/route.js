@@ -16,7 +16,6 @@ export async function POST(req) {
 
     await dbConnect();
 
-    // password has select:false in schema, so explicitly include it here
     const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
     if (!user) {
