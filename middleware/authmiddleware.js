@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { verifyToken, COOKIE_NAME } from "@/lib/auth";
 
-// Routes that require the user to be logged in
 const protectedRoutes = ["/dashboard", "/api/protected", "/api/auth/proctect"];
 
-// Routes a logged-in user shouldn't see again (login/register pages)
 const authOnlyRoutes = ["/login", "/register"];
 
 export async function middleware(req) {
@@ -21,7 +19,6 @@ export async function middleware(req) {
     pathname.startsWith(route)
   );
 
-  // Not logged in but trying to access a protected route
   if (isProtectedRoute && !isLoggedIn) {
     if (pathname.startsWith("/api")) {
       return NextResponse.json(
@@ -34,12 +31,10 @@ export async function middleware(req) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Already logged in but trying to visit login/register page
   if (isAuthOnlyRoute && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // Attach decoded user info to request headers so downstream
   // Server Components / Route Handlers can read it if needed
   if (isLoggedIn) {
     const requestHeaders = new Headers(req.headers);
